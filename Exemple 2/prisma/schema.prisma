@@ -1,0 +1,169 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String          @id @default(cuid())
+  name          String?
+  email         String          @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  
+  Authenticator Authenticator[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Commande Commande[]
+}
+
+model Account {
+  username          String  @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+model Authenticator {
+  credentialID         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, credentialID])
+}
+
+// ------------------------------------------------------ //
+
+model Avion {
+  id String @id @default(cuid())
+
+  name         String
+  reference    String
+  type         Type
+  basePrice        Float
+  quantity     Int
+  description  String
+  categories   Categories[]
+  fournisseurs Fournisseur[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  AvionAchete AvionAchete[]
+}
+
+enum Type {
+  CARGO
+  CHASSE
+  TRANSPORT
+  HELICOPTERE
+}
+
+model Categories {
+  id String @id @default(cuid())
+
+  name        String
+  description String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Avion Avion[]
+}
+
+model Fournisseur {
+  id String @id @default(cuid())
+
+  name        String
+  email       String @unique
+  phone       String
+  address     String
+  city        String
+  country     String
+  postalCode  String
+  description String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Avion Avion[]
+}
+
+// ------------------------------------------------------ //
+
+model AvionAchete {
+  id        String   @id @default(cuid()) @unique
+  
+  avion     Avion    @relation(fields: [avionId], references: [id])
+  avionId   String
+  price     Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Commande Commande[]
+}
+
+model Commande {
+  id        String   @id @default(cuid()) @unique
+
+  reference String
+  date      DateTime
+  status    String
+  total     Float
+
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  
+  avions    AvionAchete[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
