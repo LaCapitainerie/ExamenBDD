@@ -1,0 +1,172 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+ 
+generator client {
+  provider = "prisma-client-js"
+}
+ 
+model User {
+  id            String          @id @default(cuid())
+  name          String?
+  email         String          @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  // Optional for WebAuthn support
+  Authenticator Authenticator[]
+ 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Issue Issue[] @relation("UserRelated")
+
+  Milestone Milestone[] @relation("UserRelated")
+
+  Template Template[] @relation("UserRelated")
+
+  ReadMe ReadMe[] @relation("UserRelated")
+
+  Label Label[] @relation("UserRelated")
+}
+ 
+model Account {
+  username          String @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+ 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+ 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  @@id([provider, providerAccountId])
+}
+ 
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+ 
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+ 
+  @@id([identifier, token])
+}
+ 
+// Optional for WebAuthn support
+model Authenticator {
+  credentialID         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+ 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  @@id([userId, credentialID])
+}
+
+
+// ------------------------------------------------ //
+
+model Label {
+  id          String   @id @default(cuid())
+  userRelated User     @relation("UserRelated", fields: [userRelatedId], references: [id])
+  userRelatedId String
+
+  name        String
+  description String
+  color       String
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  issue Issue[]
+  template Template[]
+}
+
+model Issue {
+  id          String   @id @default(cuid())
+  userRelated User     @relation("UserRelated", fields: [userRelatedId], references: [id])
+  userRelatedId String
+
+  title       String
+  description String
+  status      Boolean @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  labels      Label[]
+  milestone   Milestone[]
+  template Template[]
+}
+
+model Milestone {
+  id          String   @id @default(cuid())
+  userRelated User     @relation("UserRelated", fields: [userRelatedId], references: [id])
+  userRelatedId String
+
+  title       String
+  description String
+  dueDate     DateTime
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  template Template[]
+  issues Issue[]
+}
+
+model Template {
+  id          String   @id @default(cuid())
+  userRelated User     @relation("UserRelated", fields: [userRelatedId], references: [id])
+  userRelatedId String
+  public     Boolean
+
+  title       String
+  description String
+  licence     String @default("MIT")
+  readme      String @default("")
+  
+  labels      Label[]
+  issues      Issue[]
+  milestones  Milestone[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ReadMe {
+  id          String   @id @default(cuid())
+  userRelated User     @relation("UserRelated", fields: [userRelatedId], references: [id])
+  userRelatedId String
+
+  title       String
+  content     String @default("")
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
