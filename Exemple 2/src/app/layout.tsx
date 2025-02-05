@@ -8,6 +8,7 @@ import Header from "@/components/sections/header";
 import { Toaster } from "@/components/ui/toaster";
 import React from "react";
 import Footer from "@/components/sections/footer";
+import { Providers } from "./providers";
 
 export const metadata: Metadata = constructMetadata({});
 
@@ -24,7 +25,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -36,20 +36,11 @@ export default async function RootLayout({
           "min-h-screen bg-background antialiased w-full mx-auto scroll-smooth"
         )}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem={false}
-        >
-
-          <main className="px-8">
-            {children}
-          </main>
-
-          <ThemeToggle />
+        <Providers>
+          {children}
           <TailwindIndicator />
-          <Toaster />
-        </ThemeProvider>
+        </Providers>
+
         <Footer />
       </body>
     </html>

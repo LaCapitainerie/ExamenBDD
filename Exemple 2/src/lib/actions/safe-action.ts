@@ -1,4 +1,3 @@
-import { log } from 'console';
 import { createSafeActionClient } from 'next-safe-action';
 import { z } from 'zod';
 
@@ -8,11 +7,11 @@ type handleServerError = (e: Error) => string;
 
 const handleServerError: handleServerError = (e) => {
   if (e instanceof ActionError) {
-    log("[DEV] - Action Error", e.message);
+    console.log("[DEV] - Action Error", e.message);
     return e.message;
   }
 
-  log("[DEV] - Unknown Error", e);
+  console.log("[DEV] - Unknown Error", e);
 
   return "An unexpected error occurred.";
 };

@@ -7,6 +7,7 @@ import { FcGoogle } from "react-icons/fc"
 
 interface SSOButtonProps {
     mode: "google" | "apple" | "github"
+    callbackUrl?: Exclude<Parameters<typeof signIn>[1], undefined>["callbackUrl"]
 }
 
 type SSOIconType = {
@@ -25,9 +26,9 @@ const SSOIcon: SSOIconType = {
     )
 }
 
-export function SSOButton({ mode, ...props }: SSOButtonProps & ButtonProps & ButtonIconProps) {
+export function SSOButton({ mode, callbackUrl, ...props }: SSOButtonProps & ButtonProps & ButtonIconProps) {
     return (
-        <Button {...props} onClick={() => signIn(mode)} variant="outline" className="w-full gap-2">
+        <Button {...props} onClick={() => signIn(mode, { callbackUrl })} variant="outline" className="w-full gap-2">
             {SSOIcon[mode]}{`Login with ${mode.charAt(0).toUpperCase() + mode.slice(1)}`}
         </Button>
     )

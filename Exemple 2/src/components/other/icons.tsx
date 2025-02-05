@@ -1,18 +1,11 @@
-import { GithubIcon } from "lucide-react";
-import Image from "next/image";
-
 type IconProps = React.HTMLAttributes<SVGElement>;
 
 
 export const Icons = {
-  logo: <GithubIcon />
-  // <Image
-  //     src="/logo.png"
-  //     alt="Logo"
-  //     width={40}
-  //     height={40}
-  //   />
-  ,
+  logo: (props: IconProps) => (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src="/logo.svg" alt="Logo" {...props} />
+  ),
   logo2: (props: IconProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"

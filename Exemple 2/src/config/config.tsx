@@ -20,21 +20,16 @@ export const siteConfig = {
       trigger: "Catalogue",
       content: {
         main: {
-          icon: Icons.logo,
+          icon: <Icons.logo className="w-auto h-[80px] " />,
           title: "Gestion des stocks",
           description: "Gérez vos stocks simplement.",
           href: "/catalogue",
         },
         items: [
           // {
-          //   href: "#",
-          //   title: "Téléchargements",
-          //   description: "Téléchargez vos rapports simplement.",
-          // },
-          // {
-          //   href: "#",
-          //   title: "Mail",
-          //   description: "Envoyez vos rapports par mail.",
+          //   href: "/catalogue",
+          //   title: "Cataloguqe",
+          //   description: "",
           // },
         ],
       },

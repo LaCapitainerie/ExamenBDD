@@ -53,7 +53,7 @@ export function LoginForm({
               </Button>
 
 
-              <SSOButton mode="github" className="w-full" />
+              <SSOButton mode="github" callbackUrl="/" className="w-full" />
               <SSOButton mode="google" className="w-full" />
 
 

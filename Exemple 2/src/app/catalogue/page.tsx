@@ -36,13 +36,15 @@ export default async function RouterPage() {
               <DialogTrigger>Ajouter un avion</DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Données de l'avion</DialogTitle>
+                  <DialogTitle>Données de l&apos;avion</DialogTitle>
                   <DialogDescription>
                     This action cannot be undone. This will permanently delete your account
                     and remove your data from our servers.
                   </DialogDescription>
                 </DialogHeader>
+
                 <AvionForm />
+                
               </DialogContent>
             </Dialog>
           </div>

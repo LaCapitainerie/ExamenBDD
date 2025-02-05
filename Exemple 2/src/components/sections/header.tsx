@@ -49,7 +49,7 @@ export default function Header({ user }: HeaderProps) {
               title="brand-logo"
               className="relative mr-6 flex items-center space-x-2"
             >
-              {Icons.logo}
+              <Icons.logo className="w-auto h-[40px] " />
               <span className="font-bold text-xl">{siteConfig.name}</span>
             </Link>
 

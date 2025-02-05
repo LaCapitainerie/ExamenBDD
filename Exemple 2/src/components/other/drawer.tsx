@@ -30,7 +30,7 @@ export default function DrawerDemo() {
               title="brand-logo"
               className="relative mr-6 flex items-center space-x-2"
             >
-              {Icons.logo}
+              <Icons.logo/>
               <span className="font-bold text-xl">{siteConfig.name}</span>
             </Link>
           </div>
