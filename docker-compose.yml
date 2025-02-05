@@ -1,13 +1,11 @@
 services:
-  progen-db:
+  examen-bdd:
     image: postgres:12
     environment:
-      POSTGRES_USER: github-setup
-      POSTGRES_PASSWORD: github-setup
-      POSTGRES_DB: github-setup
+      POSTGRES_USER: examen-bdd
+      POSTGRES_PASSWORD: examen-bdd
+      POSTGRES_DB: examen-bdd
     ports:
       - "5432:5432"
-    volumes:
-      - ./Db/init.sql:/docker-entrypoint-initdb.d/init.sql
 
       
