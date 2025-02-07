@@ -9,14 +9,12 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { UserNav } from "../ui/user-nav";
-import { User } from "next-auth";
-import { SessionProvider } from "next-auth/react";
+import { SessionProvider, useSession } from "next-auth/react";
 
-interface HeaderProps {
-  user: Omit<User, "id">
-}
+export default function Header() {
+  const { status, data } = useSession();
 
-export default function Header({ user }: HeaderProps) {
+  
   const [addBorder, setAddBorder] = useState(false);
 
   useEffect(() => {
@@ -34,6 +32,8 @@ export default function Header({ user }: HeaderProps) {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+  
+  if (status === "loading") return null;
 
   return (
     <SessionProvider>
@@ -67,8 +67,8 @@ export default function Header({ user }: HeaderProps) {
 
           <div className="flex-row gap-2 hidden sm:flex mr-4">
             {
-              user ? (
-                <UserNav user={user} className="border rounded-lg border-foreground" />
+              status === "authenticated" ? (
+                <UserNav user={data.user} className="border rounded-lg border-foreground" />
               ) : (
                 <>
                   <Link href="/login">

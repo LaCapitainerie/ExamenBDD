@@ -1,32 +1,35 @@
-import react from "react"
 import { LucideProps } from "lucide-react"
-import { Row } from "@tanstack/react-table"
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 
-import { AuthorizedKey } from "@/components/captainui/utils"
-
-interface DataTableRowFormatEnumProps<TData extends string> extends React.HTMLAttributes<HTMLDivElement> {
-  value: TData
-  enumValue: {
-    [key in TData]: {
-      value: string
-      icon: react.ForwardRefExoticComponent<Omit<LucideProps, "ref"> & react.RefAttributes<SVGSVGElement>>
-    }
-  }
+interface DataTableRowFormatEnumProps extends React.HTMLAttributes<HTMLDivElement> {
+  enum: (string | number)[]
+  Icon: React.FC<LucideProps>
+  itemName: string
 }
 
-export function DataTableRowFormatEnum<TData extends string>({
-  value,
-  enumValue,
-}: DataTableRowFormatEnumProps<TData>) {
-  
-  const Value = enumValue[value];
+export function DataTableRowFormatEnum({
+  enum: value,
+  Icon,
+  itemName = "Unknown",
+}: DataTableRowFormatEnumProps) {
 
   return (
-    <div className="flex space-x-2">
-      {Value.icon && <Value.icon/>}
-      <span className="max-w-[500px] truncate font-medium">
-        {Value.value}
-      </span>
-    </div>
-  )
+    <DropdownMenu>
+      <DropdownMenuTrigger>{`${value.length} ${itemName}`}</DropdownMenuTrigger>
+      <DropdownMenuContent>
+          <DropdownMenuLabel className="capitalize">{itemName} list</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+              {
+                  value.map((item, idx) => (
+                      <DropdownMenuItem key={idx}>
+
+                        <Icon className="w-6 h-6 mr-2" />
+                        {item}
+
+                      </DropdownMenuItem>
+                  ))
+              }
+      </DropdownMenuContent>
+  </DropdownMenu>
+)
 }

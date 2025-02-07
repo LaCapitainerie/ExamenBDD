@@ -1,14 +1,14 @@
 import { siteConfig } from '@/config/config'
-import { CustomResponse } from '@/lib/safe-route'
-import { Avion } from '@/types/Prisma/Avion'
+import { CustomResponse, fetcher } from '@/lib/safe-route'
+import { Produit, Fournisseur } from '@prisma/client'
 import useSWR from 'swr'
 
-export function useAvions() {
-    const { data, error, isLoading } = useSWR<CustomResponse<Avion[]>>(`${siteConfig.url}/api/avion`)
+export function useAvions(token: string) {
+    const { data, error, isLoading } = useSWR<CustomResponse<(Produit & { fournisseurs: Fournisseur[] })[]>>(`${siteConfig.url}/api/avion`, (url: string) => fetcher(url, token))
 
     return {
         avions: data?.success ? data.data : [],
-        error,
-        isLoading
+        avionsError: error,
+        isAvionsLoading: isLoading
     }
 }

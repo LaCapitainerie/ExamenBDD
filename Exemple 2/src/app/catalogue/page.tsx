@@ -1,6 +1,3 @@
-import { DataTable } from "@/components/captainui/data-table/data-table";
-import { prisma } from "@/lib/prisma";
-import { AvionsColumns } from "./_components/columns";
 import {
   Dialog,
   DialogContent,
@@ -10,14 +7,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import AvionForm from "@/components/sections/_components/avion/_form";
+import { ProductTable } from "./_components/produit-table";
 
 export default async function RouterPage() {
-
-  const avions = await prisma.avion.findMany({
-    include: {
-      fournisseurs: true,
-    },
-  });
 
   return (
     <main>
@@ -50,12 +42,7 @@ export default async function RouterPage() {
           </div>
         </div>
 
-        <DataTable
-          columns={AvionsColumns}
-          data={avions}
-          textFilterColumn={"name"}
-          itemName={""}
-        />
+        <ProductTable />
 
       </div>
 

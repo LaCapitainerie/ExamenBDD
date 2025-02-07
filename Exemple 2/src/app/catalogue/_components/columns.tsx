@@ -3,11 +3,13 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableRowDelete } from "@/components/captainui/data-table/row-type/data-table-row-delete";
-import { CircleCheck, CircleDot, MilestoneIcon } from "lucide-react";
+import { MilestoneIcon } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import React from "react";
-import { Avion, Fournisseur } from "@prisma/client";
-import { DataTableRowFormatEnum } from "@/components/captainui/data-table/row-type/data-table-row-enum";
+import { Fournisseur, Produit } from "@prisma/client";
+import { NumberFunctionFilter } from "@/components/captainui/data-table/column-filter/data-table-column-number";
+import { DataTableColumnHeader } from "@/components/captainui/data-table/data-table-column-header";
+import { ArrayFunctionFilter } from "@/components/captainui/data-table/column-filter/data-table-column-array";
 
 export const AvionsColumns = [
     {
@@ -36,7 +38,9 @@ export const AvionsColumns = [
     },
     {
         accessorKey: "name",
-        header: "Name",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Name" />
+        ),
     },
     {
         accessorKey: "description",
@@ -44,25 +48,18 @@ export const AvionsColumns = [
     },
     {
         accessorKey: "type",
-        header: "Type",
-        cell: ({ row }) => {
-            <DataTableRowFormatEnum value={row.original.type} enumValue={
-                {
-                    "CARGO": {
-                        value: "Cargo",
-                        icon: CircleDot
-                    },
-                    "PASSENGER": {
-                        value: "Passenger",
-                        icon: CircleCheck
-                    }
-                }
-            } />
-        },
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Type" />
+        ),
     },
     {
-        accessorKey: "milestone",
-        header: "Milestone",
+        accessorKey: "quantity",
+        header: "Quantity",
+        filterFn: NumberFunctionFilter,
+    },
+    {
+        accessorKey: "fournisseurs",
+        header: "Fournisseurs",
         cell: ({ row }) => (
             <DropdownMenu>
                 <DropdownMenuTrigger>{`${row.original.fournisseurs.length} Fournisseurs`}</DropdownMenuTrigger>
@@ -71,7 +68,7 @@ export const AvionsColumns = [
                     <DropdownMenuSeparator />
                     {
                         row.original.fournisseurs.map((fournisseur) => (
-                            <DropdownMenuItem>
+                            <DropdownMenuItem key={fournisseur.id}>
                                 <MilestoneIcon />
                                 {fournisseur.name}
                             </DropdownMenuItem>
@@ -79,7 +76,8 @@ export const AvionsColumns = [
                     }
                 </DropdownMenuContent>
             </DropdownMenu>
-        )
+        ),
+        filterFn: ArrayFunctionFilter
     },
     /* {
         id: "details",
@@ -90,6 +88,6 @@ export const AvionsColumns = [
     }, */
     {
         id: "delete",
-        cell: ({ row }) => <DataTableRowDelete id={row.original.id} url={"/api/github/issue"} itemName="Issue" />,
+        cell: ({ row }) => <DataTableRowDelete id={row.original.id} url={`/api/avion?id=${row.original.id}`} itemName="Avion" />,
     }
-] as const satisfies ColumnDef<Avion & { fournisseurs: Fournisseur[] }>[];
+] satisfies ColumnDef<Produit & { fournisseurs: Fournisseur[] }>[];

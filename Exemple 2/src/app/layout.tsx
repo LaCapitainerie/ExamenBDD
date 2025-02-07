@@ -1,14 +1,11 @@
 import { TailwindIndicator } from "@/components/other/tailwind-indicator";
-import { ThemeProvider } from "@/components/other/theme-provider";
-import { ThemeToggle } from "@/components/other/theme-toggle";
 import { cn, constructMetadata } from "@/lib/utils";
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import Header from "@/components/sections/header";
-import { Toaster } from "@/components/ui/toaster";
 import React from "react";
 import Footer from "@/components/sections/footer";
 import { Providers } from "./providers";
+import Header from "@/components/sections/header";
 
 export const metadata: Metadata = constructMetadata({});
 
@@ -37,11 +34,12 @@ export default async function RootLayout({
         )}
       >
         <Providers>
+          <Header />
           {children}
           <TailwindIndicator />
+          <Footer />
         </Providers>
 
-        <Footer />
       </body>
     </html>
   );

@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { createZodRoute } from 'next-zod-route';
 import { prisma } from "./prisma";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { getServerSession } from "next-auth/next";
 
 export type CustomResponse<T> =
   | ResponseError
@@ -43,7 +44,7 @@ export const authRoute = route.use(async ( {request} ) => {
   const tokenReq = request.headers.get('Authorization');
   
   if (!tokenReq) {
-    throw new RouteError("Unauthorized", 401);
+    throw new RouteError("Unauthorized no token", 401);
   }
 
   const token = tokenReq?.split(" ")[1];
@@ -58,7 +59,7 @@ export const authRoute = route.use(async ( {request} ) => {
   })
 
   if (!UserID) {
-    redirect('/login')
+    throw new RouteError("Unauthorized token", 401);
   }
 
   const Account = await prisma.account.findFirst({
@@ -74,3 +75,37 @@ export const authRoute = route.use(async ( {request} ) => {
 export function ResponseCustom<T>(data: CustomResponse<T>, status: number) {
   return NextResponse.json(data, { status });
 }
+
+export async function fetchRequest<TData>(defaultValue: TData, ...props: Parameters<typeof fetch>) {
+  const result = await fetch(...props);
+  try {
+    const data: CustomResponse<TData> = await result.json();
+
+    const returnValue = ( data.success ? data.data : defaultValue );
+
+    return returnValue;
+
+  } catch (error) {
+    console.error(error);
+    return defaultValue;
+  }
+}
+
+export async function needUserAuth() {
+  const user = await getServerSession();
+
+  console.log(user);
+  
+  
+  if (user) {
+    return user;
+  }
+
+  notFound();
+}
+
+export const fetcher = (url: string, token: string) => fetch(url, {
+  headers: {
+    'Authorization': `token ${token}`
+  }
+}).then(r => r.json())

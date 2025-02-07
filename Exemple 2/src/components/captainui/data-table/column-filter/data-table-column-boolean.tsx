@@ -1,6 +1,6 @@
 import * as React from "react"
-import { Check, PlusCircle } from "lucide-react"
-import { Column } from "@tanstack/react-table"
+import { Check, CheckCircle2Icon, CircleXIcon, PlusCircle } from "lucide-react"
+import { Column, Row } from "@tanstack/react-table"
 
 import { cn } from "@/lib/utils"
 
@@ -21,40 +21,64 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { Separator } from "@/components/ui/separator"
-
-export type BooleanObject = {
-  label: string
-  value: boolean
-  icon?: React.ComponentType<{ className?: string }>
-}
-
-export type EnumObject= {
-  label: string
-  value: string
-  icon?: React.ComponentType<{ className?: string }>
-}
-
-export type FilterObject = BooleanObject | EnumObject
+import { z } from "zod"
 
 interface DataTableFacetedFilterProps<TData, TValue> {
-  column?: Column<TData, TValue>
+  column: Column<TData, TValue>
   title?: string
-  options: FilterObject[]
 }
 
-export function DataTableFacetedFilter<TData, TValue>({
+export function BooleanFunctionFilter<TData>(
+  row: Row<TData>,
+  columnId: string,
+  filterValue: any
+) {
+  const filter = filterValue as boolean[]
+
+  if (!filter?.length) return true
+
+  return filter.includes(z.coerce.boolean().parse(row.original[columnId as keyof Row<TData>["original"]]))
+}
+
+export function DataTableColumnFilterBoolean<TData, TValue>({
   column,
   title,
-  options,
 }: DataTableFacetedFilterProps<TData, TValue>) {
+
+  if (column.getFilterFn() && !(column.getFilterFn() === BooleanFunctionFilter)) throw new Error(`Column ${title} must have a boolean filter function`);
+
   const facets = column?.getFacetedUniqueValues()
-  const selectedValues = new Set(column?.getFilterValue() as FilterObject['value'][])
+  const selectedValues = new Set(column?.getFilterValue() as boolean[])
+
+  const YesIcon = (
+    <div className="flex w-[100px] items-center">
+      <CheckCircle2Icon color={"green"} className={`mr-2 h-4 w-4 text-muted-foreground`} />
+      <span className="max-w-[500px] truncate font-medium">
+        Yes
+      </span>
+    </div>
+  )
+
+  const NoIcon = (
+    <div className="flex w-[100px] items-center">
+      <CircleXIcon color={"red"} className={`mr-2 h-4 w-4 text-muted-foreground`} />
+      <span className="max-w-[500px] truncate font-medium">
+        No
+      </span>
+    </div>
+  )
+  
+  const OptionsValue = [
+    { label: YesIcon, value: true },
+    { label: NoIcon, value: false },
+  ];
 
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="h-8 border-dashed capitalize w-full sm:w-auto">
-          <PlusCircle />
+        <Button variant="outline" size="sm" className="h-8 border-dashed">
+          <PlusCircle className="size-4" />
+          <Separator orientation="vertical" className="mx-2 h-4" />
           {title}
           {selectedValues?.size > 0 && (
             <>
@@ -74,7 +98,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                     {selectedValues.size} selected
                   </Badge>
                 ) : (
-                  options
+                  OptionsValue
                     .filter((option) => selectedValues.has(option.value))
                     .map((option) => (
                       <Badge
@@ -91,13 +115,13 @@ export function DataTableFacetedFilter<TData, TValue>({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full sm:w-[200px] p-0" align="start">
+      <PopoverContent className="w-[200px] p-0" align="start">
         <Command>
           <CommandInput placeholder={title} />
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
-              {options.map((option) => {
+              {OptionsValue.filter(o => o.value !== undefined).map((option) => {
                 const isSelected = selectedValues.has(option.value)
                 return (
                   <CommandItem
@@ -124,9 +148,6 @@ export function DataTableFacetedFilter<TData, TValue>({
                     >
                       <Check />
                     </div>
-                    {option.icon && (
-                      <option.icon className="mr-2 h-4 w-4 text-muted-foreground" />
-                    )}
                     <span className="capitalize">{option.label}</span>
                     {facets?.get(option.value) && (
                       <span className="ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs">

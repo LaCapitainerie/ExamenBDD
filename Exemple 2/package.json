@@ -9,6 +9,9 @@
     "lint": "next lint",
     "seed": "node prisma/seed.js"
   },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.4",
     "@babel/preset-react": "^7.26.3",
@@ -30,6 +33,7 @@
     "@radix-ui/react-popover": "^1.1.2",
     "@radix-ui/react-select": "^2.1.2",
     "@radix-ui/react-separator": "^1.1.0",
+    "@radix-ui/react-slider": "^1.2.3",
     "@radix-ui/react-slot": "^1.1.1",
     "@radix-ui/react-switch": "^1.1.0",
     "@radix-ui/react-toast": "^1.2.2",

@@ -81,7 +81,7 @@ model Authenticator {
 
 // ------------------------------------------------------ //
 
-model Avion {
+model Produit {
   id String @id @default(cuid())
 
   name         String
@@ -96,7 +96,7 @@ model Avion {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  AvionAchete AvionAchete[]
+  AvionAchete LigneCommande[]
 }
 
 enum Type {
@@ -109,39 +109,39 @@ enum Type {
 model Categories {
   id String @id @default(cuid())
 
-  name        String
+  name        String @unique
   description String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Avion Avion[]
+  Avion Produit[]
 }
 
 model Fournisseur {
   id String @id @default(cuid())
 
-  name        String
+  name        String @unique
   email       String @unique
-  phone       String
-  address     String
-  city        String
-  country     String
-  postalCode  String
-  description String
+  phone       String @default("")
+  address     String @default("")
+  city        String @default("")
+  country     String @default("")
+  postalCode  String @default("")
+  description String @default("")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Avion Avion[]
+  Avion Produit[]
 }
 
 // ------------------------------------------------------ //
 
-model AvionAchete {
+model LigneCommande {
   id        String   @id @default(cuid()) @unique
   
-  avion     Avion    @relation(fields: [avionId], references: [id])
+  avion     Produit    @relation(fields: [avionId], references: [id])
   avionId   String
   price     Float
 
@@ -162,7 +162,7 @@ model Commande {
   user      User     @relation(fields: [userId], references: [id])
   userId    String
   
-  avions    AvionAchete[]
+  avions    LigneCommande[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

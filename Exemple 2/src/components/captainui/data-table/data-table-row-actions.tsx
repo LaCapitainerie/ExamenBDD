@@ -4,7 +4,7 @@ import { z } from "zod"
 import { MoreHorizontal } from "lucide-react"
 import { Row } from "@tanstack/react-table"
 
-import { toast } from "@/hooks/use-toast"
+import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -22,7 +22,20 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 import { AuthorizedKey } from "@/components/captainui/utils"
-import { CustomResponse } from "@/lib/safe-route"
+
+type CustomResponse<T> =
+  | ResponseError
+  | ResponseSuccess<T>
+
+type ResponseError = {
+  success: false
+  error: string
+}
+
+type ResponseSuccess<T> = {
+  success: true
+  data: T
+}
 
 type Authorized = z.ZodEnum<any> | z.ZodBoolean
 
@@ -33,17 +46,13 @@ interface DataTableRowActionsProps<TData, T extends z.ZodObject<any>, K extends 
   apiUrl: string
 }
 
-
-
-async function UpdateItem<TData extends {[x: string]: any;}>(apiUrl: string, itemSchema: TData, user: any | null) {
+async function UpdateItem<TData extends {[x: string]: any;}>(apiUrl: string, itemSchema: TData) {
 
   try {
-    
     const result = await fetch(apiUrl, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        'Authorization': `Bearer ${user?.token}`,
       },
       body: JSON.stringify(
         itemSchema
@@ -53,22 +62,13 @@ async function UpdateItem<TData extends {[x: string]: any;}>(apiUrl: string, ite
     const data: CustomResponse<TData> = await result.json()
 
     if (!data.success) {
-      toast({
-        title: "Item Update Failed",
-        description: data.error,
-      })
+      toast.warning("Item Update Failed")
     } else {
-      toast({
-        title: "Item Updated",
-        description: "Item has been updated successfully",
-      })
+      toast.success("Item Updated")
     }
 
   } catch (error) {
-    toast({
-      title: "Item Update Failed",
-      description: `${error}`,
-    })
+    toast.error(`Error: ${error}`)
   }
 
 }
@@ -85,7 +85,7 @@ export function DataTableRowActions<TData, T extends z.ZodObject<any>, K extends
   const values: Authorized[] = keyValues.map(keyValue => itemSchema.shape[keyValue]);
 
   const keyValueValues:string[][] = values.map(value => value instanceof z.ZodBoolean ? ["true", "false"] : value?.options);
-
+  
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -109,9 +109,8 @@ export function DataTableRowActions<TData, T extends z.ZodObject<any>, K extends
               <DropdownMenuSubContent>
                 <DropdownMenuRadioGroup value={`${row.original[keyValues[index]]}`} >
                   {keyValueValue.map((item: string) => (
-                    <DropdownMenuRadioItem className="capitalize" key={item} value={item} 
-                    // onClick={ () => UpdateItem<typeof itemValue>(apiUrl, itemValue, user) }
-                    > {item}
+                    <DropdownMenuRadioItem className="capitalize" key={item} value={item} onClick={() => UpdateItem<typeof itemValue>(apiUrl, itemValue)}>
+                      {item}
                     </DropdownMenuRadioItem>
                   ))}
                 </DropdownMenuRadioGroup>

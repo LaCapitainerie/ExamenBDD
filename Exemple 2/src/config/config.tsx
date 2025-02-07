@@ -1,5 +1,5 @@
 import { Icons } from "@/components/other/icons";
-import { BookDashedIcon, CircleDotIcon, MilestoneIcon, TagIcon } from "lucide-react";
+import { CircleDotIcon } from "lucide-react";
 import { FaTwitter, FaYoutube } from "react-icons/fa";
 import { RiInstagramFill } from "react-icons/ri";
 
@@ -26,42 +26,12 @@ export const siteConfig = {
           href: "/catalogue",
         },
         items: [
-          // {
-          //   href: "/catalogue",
-          //   title: "Cataloguqe",
-          //   description: "",
-          // },
-        ],
-      },
-    },
-    {
-      trigger: "Créer",
-      content: {
-        items: [
           {
-            icon: TagIcon,
-            href: "/labels",
-            title: "Labels",
-            description: "Créez des labels pour vos projets.",
-          },
-          {
+            href: "/commande",
+            title: "Commande",
+            description: "Consultation des commandes",
             icon: CircleDotIcon,
-            href: "/issues",
-            title: "Issues",
-            description: "Créez des issues pour vos projets.",
           },
-          {
-            icon: MilestoneIcon,
-            href: "/milestones",
-            title: "Milestones",
-            description: "Créez des milestones pour vos projets.",
-          },
-          {
-            icon: BookDashedIcon,
-            href: "/templates",
-            title: "Templates",
-            description: "Créez des templates pour vos projets.",
-          }
         ],
       },
     },

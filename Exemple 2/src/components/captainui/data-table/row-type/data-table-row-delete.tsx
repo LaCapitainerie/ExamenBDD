@@ -13,6 +13,8 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { CustomResponse } from "@/lib/safe-route";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface DataTableRowDeleteProps {
     id: string;
@@ -22,7 +24,8 @@ interface DataTableRowDeleteProps {
 }
 
 export function DataTableRowDelete({ id, onDelete, url, itemName }: DataTableRowDeleteProps) {
-    const { toast } = useToast();
+
+    const router = useRouter();
 
     async function deleteRow() {
         try {
@@ -47,18 +50,18 @@ export function DataTableRowDelete({ id, onDelete, url, itemName }: DataTableRow
                 throw new Error(data.error);
             }
 
-            toast({
-                title: `${itemName.at(0)?.toLocaleUpperCase() + itemName.slice(1)} deleted`,
-                description: `${itemName.at(0)?.toLocaleUpperCase() + itemName.slice(1)} has been deleted`,
-            })
+            toast.success(
+                `${itemName.at(0)?.toLocaleUpperCase() + itemName.slice(1)} deleted`,
+            )
 
             onDelete?.();
+
+            router.refresh();
         } catch (error) {
             
-            toast({
-                title: `Error deleting ${itemName}`,
-                description: `${error}`,
-            })
+            toast.error(
+                `Error deleting ${itemName}`,
+            )
         }
     }
 

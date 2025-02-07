@@ -1,113 +1,96 @@
 "use client"
 
 import { X } from "lucide-react"
-import { Table } from "@tanstack/react-table"
-
+import { ColumnDef, Table } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-
-import { AuthorizedKey } from "@/components/captainui/utils"
-
 import { DataTableViewOptions } from "./data-table-view-options"
-import { BooleanObject, DataTableFacetedFilter, EnumObject } from "./data-table-faceted-filter"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { DataTableColumnFilter, filterType } from "./column-filter/data-table-filter"
 
-type Authorized = boolean | string
+type ExtractAccessorKey<T> = T extends { accessorKey: infer K } ? K : never;
 
-type ObjectValue<TData, K extends keyof TData> = {
-  value: (TData[K] extends boolean ? BooleanObject : EnumObject)[]
-  alias?: string
+interface DataTableToolbarProps<TData, TValue, TColumns extends ColumnDef<TData, TValue>[]> {
+  table: Table<TData>;
+  keyValue: Partial<{
+    [key : string]: filterType | { [k : string]: filterType };
+  }>;
+  filterColumn?: ExtractAccessorKey<TColumns[number]> & string;
 }
 
-export type keyValueType<TData> = {
-  [K in AuthorizedKey<TData, Authorized>]: ObjectValue<TData, K>
-}
-
-interface DataTableToolbarProps<TData, TColumns> {
-  table: Table<TData>
-  keyValue?: keyValueType<TColumns>
-  filterColumn: keyof TData & string
-  itemName: string
-  CreateForm?: JSX.Element
-}
-
-export function DataTableToolbar<TData, TColumns>({
+export function DataTableToolbar<TData, TValue, TColumns extends ColumnDef<TData, TValue>[]>({
   table,
   keyValue,
-  filterColumn,
-  itemName,
-  CreateForm,
-}: DataTableToolbarProps<TData, TColumns>) {
-  const isFiltered = table.getState().columnFilters.length > 0
-  
+  filterColumn
+}: DataTableToolbarProps<TData, TValue, TColumns>) {
+  const isFiltered = table.getState().columnFilters.length > 0;
+
+  const isAllPageRowsSelected = table.getIsAllPageRowsSelected();
+  const isAllRowsSelected = table.getIsAllRowsSelected();
+
   return (
     <div className="flex items-center justify-between">
-      <div className="flex flex-1 items-center space-x-2 flex-col sm:flex-row space-y-2 sm:space-y-0">
-        <Input
+      <div className="flex flex-1 items-center space-x-2">
+        {filterColumn && <Input
           placeholder={`Filter ${filterColumn}...`}
           value={(table.getColumn(filterColumn)?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn(filterColumn)?.setFilterValue(event.target.value)
           }
-          className="h-8 w-full sm:w-[150px] lg:w-[250px]"
-        />
-        <div className="flex space-x-2 sm:space-x-4 w-full sm:w-auto">
-          {
-            Object.entries(keyValue ?? {}).map(([key, value]) => {
-              const Valeur : ObjectValue<TColumns, keyof TColumns> = value as ObjectValue<TColumns, keyof TColumns>
-              return table.getColumn(key) && (
-                <DataTableFacetedFilter
-                  key={key}
-                  column={table.getColumn(key)}
-                  title={Valeur.alias ?? key}
-                  options={Valeur.value as (BooleanObject | EnumObject)[]}
-                />
-              )
-            })
-          }
-        </div>
+          className="h-8 w-[150px] lg:w-[250px]"
+        />}
+        {
+          Object.entries(keyValue).map(([key, value]) => {
+            if(typeof value === "object") {
+              return Object.entries(value).map(([k, v]) => {
+                const col = table.getColumn(key);
+                return col && v && (
+                  <DataTableColumnFilter filterType={v} column={col} title={key.charAt(0).toLocaleUpperCase() + key.slice(1)} />
+                )
+              })
+            }
+
+            const col = table.getColumn(key);
+            return col && value && (
+              <DataTableColumnFilter filterType={value} column={col} title={key.charAt(0).toLocaleUpperCase() + key.slice(1)} />
+            )
+          })
+        }
         {isFiltered && (
-            <Button
-              variant="ghost"
-              onClick={() => table.resetColumnFilters()}
-              className="h-8 px-2 lg:px-3"
-            >
-              Reset
-              <X />
-            </Button>
-          )}
+          <Button
+            variant="ghost"
+            onClick={() => table.resetColumnFilters()}
+            className="h-8 px-2 lg:px-3"
+          >
+            Reset
+            <X />
+          </Button>
+        )}
       </div>
-
-      {Boolean(CreateForm) && (
-
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button
-              variant="outline"
-              size="sm"
-              className="ml-auto hidden h-8 lg:flex"
-            >
-              Create a new {itemName}
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>
-                Create a new {itemName}
-              </DialogTitle>
-            </DialogHeader>
-
-            <DialogDescription>
-              {CreateForm}
-            </DialogDescription>
-
-
-          </DialogContent>
-        </Dialog>
-
-      )}
-
-      <DataTableViewOptions table={table} />
+      <div className="flex flex-row gap-2">
+        {
+          isAllPageRowsSelected && !isAllRowsSelected &&
+          <Button
+            variant="outline"
+            size="sm"
+            className="ml-auto hidden h-8 lg:flex"
+            onClick={() => table.toggleAllRowsSelected()}
+          >
+            Tout sélectionner
+          </Button>
+        }
+        {
+          isAllRowsSelected &&
+          <Button
+            variant="outline"
+            size="sm"
+            className="ml-auto hidden h-8 lg:flex"
+            onClick={() => table.toggleAllRowsSelected()}
+          >
+            Tout désélectionner
+          </Button>
+        }
+        <DataTableViewOptions table={table} />
+      </div>
     </div>
   )
 }

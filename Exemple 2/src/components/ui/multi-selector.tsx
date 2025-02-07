@@ -29,6 +29,7 @@ export function FancyMultiSelect({ options, values, onChange }: FancyMultiSelect
   const handleUnselect = React.useCallback((framework: Framework) => {
     setSelected((prev) => prev.filter((s) => s !== framework));
     onChange?.(selected);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleKeyDown = React.useCallback(
@@ -51,6 +52,7 @@ export function FancyMultiSelect({ options, values, onChange }: FancyMultiSelect
         }
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
   

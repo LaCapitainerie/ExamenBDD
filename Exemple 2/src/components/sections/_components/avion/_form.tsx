@@ -27,11 +27,11 @@ import { Avion } from "@/types/Prisma/Avion";
 import { useAvions } from "@/hooks/use-avions";
 import { useCategories } from "@/hooks/use-categories";
 import { useFournisseurs } from "@/hooks/use-fournisseurs";
-import { useMutation } from "@tanstack/react-query";
-import { createAvionAction, createAvionSchema } from "./create-avion.action";
 import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "next/navigation";
-import { Categorie } from "@/types/Prisma/Categorie";
+import { createAvionSchema } from "@/app/api/(content)/avion/route";
+import { fetchRequest } from "@/lib/safe-route";
+import { useSession } from "next-auth/react";
 
 type formSchemaType = z.infer<typeof createAvionSchema>;
 
@@ -39,6 +39,7 @@ type FormProps = {
   defaultValues?: formSchemaType;
 };
 export default function AvionForm({ defaultValues }: FormProps) {
+  const { data } = useSession();
   const { avions } = useAvions();
   const { categories } = useCategories();
   const { fournisseurs } = useFournisseurs();
@@ -49,29 +50,37 @@ export default function AvionForm({ defaultValues }: FormProps) {
     defaultValues,
   });
 
-  const mutation = useMutation({
-    mutationFn: async (values: formSchemaType) => {
-      const result = await createAvionAction(values);
+  async function onSubmit(values: formSchemaType) {
+    try {
 
-      if (!result || result.serverError) {
-        toast.error(result?.serverError ?? "Failed to create avion");
+      const result = await fetchRequest<Avion | null>(null, "/api/avion", {
+        method: "POST",
+        headers: {
+          "Authorization": `token ${data?.access_token}`,
+        },
+        body: JSON.stringify(values),
+      });
+  
+      if (!result) {
+        toast.error("Failed to create avion");
         return;
       }
+  
+      toast.success("Avion created");
 
-      toast.success("Avion created", result.data);
-      return;
+      router.refresh();
+      form.reset();
 
-      //   router.refresh();
-      //   form.reset(result.data as formSchemaType);
-    },
-  });
+    } catch (error) {
+      console.error('Form submission error', error)
+      toast.error('Failed to submit the form. Please try again.')
+    }
+  }
 
   return (
     <Form {...form}>
       <form
-        onSubmit={async (v) =>
-          mutation.mutateAsync(v as unknown as formSchemaType)
-        }
+        onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-8 max-w-3xl mx-auto py-10"
       >
         <FormField
