@@ -17,7 +17,7 @@ export const siteConfig = {
   },
   header: [
     {
-      trigger: "Catalogue",
+      trigger: "Gestion",
       content: {
         main: {
           icon: <Icons.logo className="w-auto h-[80px] " />,

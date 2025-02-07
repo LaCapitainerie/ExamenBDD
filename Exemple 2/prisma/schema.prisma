@@ -21,7 +21,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Commande Commande[]
+  // Commande Commande[]
 }
 
 model Account {
@@ -155,11 +155,9 @@ model Commande {
   id        String   @id @default(cuid()) @unique
 
   reference String
-  date      DateTime
-  status    String
-  total     Float
+  date      DateTime @default(now())
 
-  user      User     @relation(fields: [userId], references: [id])
+  // user      User     @relation(fields: [userId], references: [id])
   userId    String
   
   avions    LigneCommande[]

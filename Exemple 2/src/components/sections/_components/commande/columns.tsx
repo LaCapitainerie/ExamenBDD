@@ -2,16 +2,18 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { DataTableRowDelete } from "@/components/captainui/data-table/row-type/data-table-row-delete";
 import { MilestoneIcon } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import React from "react";
-import { Fournisseur, Produit } from "@prisma/client";
 import { NumberFunctionFilter } from "@/components/captainui/data-table/column-filter/data-table-column-number";
-import { DataTableColumnHeader } from "@/components/captainui/data-table/data-table-column-header";
 import { ArrayFunctionFilter } from "@/components/captainui/data-table/column-filter/data-table-column-array";
+import { DataTableRowFormatDate } from "@/components/captainui/data-table/row-type/data-table-row-date";
+import { DataTableRowFormatCurrency } from "@/components/captainui/data-table/row-type/data-table-row-currency";
+import { Commande } from "@/types/Prisma/Commande";
+import { AvionAchete } from "@/types/Prisma/Avion";
+import { DateFunctionFilter } from "@/components/captainui/data-table/column-filter/data-table-column-date";
 
-export const AvionsColumns = [
+export const CommandesColumns = [
     {
         id: "select",
         header: ({ table }) => (
@@ -36,58 +38,40 @@ export const AvionsColumns = [
         enableSorting: false,
         enableHiding: false,
     },
+    
     {
-        accessorKey: "name",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Name" />
-        ),
+        accessorKey: "reference",
     },
     {
-        accessorKey: "description",
-        header: "Description",
+        accessorKey: "date",
+        cell: ({ row }) => <DataTableRowFormatDate value={row.original.date} />,
+        filterFn: DateFunctionFilter
     },
     {
-        accessorKey: "type",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Type" />
-        ),
+        accessorKey: "total",
+        cell: ({ row }) => <DataTableRowFormatCurrency value={row.original.total} numberFormat={"fr-Fr"} currency={"EUR"} />,
+        filterFn: NumberFunctionFilter
     },
     {
-        accessorKey: "quantity",
-        header: "Quantity",
-        filterFn: NumberFunctionFilter,
-    },
-    {
-        accessorKey: "fournisseurs",
-        header: "Fournisseurs",
+        accessorKey: "avions",
+        header: "Avions",
         cell: ({ row }) => (
             <DropdownMenu>
-                <DropdownMenuTrigger>{`${row.original.fournisseurs.length} Fournisseurs`}</DropdownMenuTrigger>
+                <DropdownMenuTrigger>{`${row.original.avions.length} Avions`}</DropdownMenuTrigger>
                 <DropdownMenuContent>
-                    <DropdownMenuLabel>Liste des fournisseurs</DropdownMenuLabel>
+                    <DropdownMenuLabel>Liste des avions</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     {
-                        row.original.fournisseurs.map((fournisseur) => (
-                            <DropdownMenuItem key={fournisseur.id}>
+                        row.original.avions.map((ligneAvion) => (
+                            <DropdownMenuItem key={ligneAvion.id}>
                                 <MilestoneIcon />
-                                {fournisseur.name}
+                                {ligneAvion.avion.name}
                             </DropdownMenuItem>
                         ))
                     }
                 </DropdownMenuContent>
             </DropdownMenu>
         ),
-        filterFn: ArrayFunctionFilter
+        filterFn: (row, col, oth) => ArrayFunctionFilter("name", row, col, oth)
     },
-    /* {
-        id: "details",
-        cell: ({ row }) =>
-            <FileDialog row={row} itemSchema={Label} >
-                <IssueForm mode="PUT" defaultValues={{ ...row.original, labels: row.original.labels.map(l => l.name) }} />
-            </FileDialog>
-    }, */
-    {
-        id: "delete",
-        cell: ({ row }) => <DataTableRowDelete id={row.original.id} url={`/api/avion?id=${row.original.id}`} itemName="Avion" />,
-    }
-] satisfies ColumnDef<Produit & { fournisseurs: Fournisseur[] }>[];
+] satisfies ColumnDef<Commande & { avions: AvionAchete[] }>[];

@@ -6,7 +6,6 @@ export const Commande = z.object({
     
     reference: z.string(),
     date: z.date(),
-    status: z.enum(["EN_ATTENTE", "EN_COURS", "ENVOYEE", "LIVREE"]),
     total: z.number(),
 
     userId: z.string(),

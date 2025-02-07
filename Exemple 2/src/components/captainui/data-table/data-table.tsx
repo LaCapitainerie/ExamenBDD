@@ -53,7 +53,7 @@ interface DataTableProps<
    * The columns to use as key values for filtering.
    */
   keyValue?: Partial<{
-    [key in ExtractAccessorKey<TColumns[number]>]: filterType | { [k in keyof Partial<Row<TData>["original"]>]: filterType };
+    [key in keyof TData]: TData[key] extends object ? { [k in Partial<keyof TData[key]>]: filterType } : filterType;
   }>;
   /**
    * The column to use as a text filter.

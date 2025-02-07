@@ -1,21 +1,19 @@
-import { Row } from "@tanstack/react-table"
-
-import { AuthorizedKey } from "@/components/captainui/utils"
-
-interface DataTableRowFormatCurrencyProps<TData> extends React.HTMLAttributes<HTMLDivElement> {
-  row: Row<TData>
-  keyValue: AuthorizedKey<TData, number> & string
+interface DataTableRowFormatCurrencyProps extends React.HTMLAttributes<HTMLDivElement> {
+  value: number
+  numberFormat?: Intl.LocalesArgument
+  currency?: Intl.NumberFormatOptions["currency"]
 }
 
-export function DataTableRowFormatCurrency<TData>({
-  row,
-  keyValue,
-}: DataTableRowFormatCurrencyProps<TData>) {
+export function DataTableRowFormatCurrency({
+  value,
+  numberFormat,
+  currency
+}: DataTableRowFormatCurrencyProps) {
 
-  const formatted = new Intl.NumberFormat("en-US", {
+  const formatted = new Intl.NumberFormat(numberFormat ?? "en-US", {
     style: "currency",
-    currency: "USD",
-  }).format(row.getValue<number>(keyValue))
+    currency: currency ?? "USD",
+  }).format(value)
 
   return <div className="text-right font-medium">{formatted}</div>
 

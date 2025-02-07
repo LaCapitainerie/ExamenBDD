@@ -97,12 +97,12 @@ CREATE TABLE "Fournisseur" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "phone" TEXT NOT NULL,
-    "address" TEXT NOT NULL,
-    "city" TEXT NOT NULL,
-    "country" TEXT NOT NULL,
-    "postalCode" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
+    "phone" TEXT NOT NULL DEFAULT '',
+    "address" TEXT NOT NULL DEFAULT '',
+    "city" TEXT NOT NULL DEFAULT '',
+    "country" TEXT NOT NULL DEFAULT '',
+    "postalCode" TEXT NOT NULL DEFAULT '',
+    "description" TEXT NOT NULL DEFAULT '',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -124,9 +124,7 @@ CREATE TABLE "LigneCommande" (
 CREATE TABLE "Commande" (
     "id" TEXT NOT NULL,
     "reference" TEXT NOT NULL,
-    "date" TIMESTAMP(3) NOT NULL,
-    "status" TEXT NOT NULL,
-    "total" DOUBLE PRECISION NOT NULL,
+    "date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "userId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -168,6 +166,12 @@ CREATE UNIQUE INDEX "Session_sessionToken_key" ON "Session"("sessionToken");
 CREATE UNIQUE INDEX "Authenticator_credentialID_key" ON "Authenticator"("credentialID");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Categories_name_key" ON "Categories"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Fournisseur_name_key" ON "Fournisseur"("name");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Fournisseur_email_key" ON "Fournisseur"("email");
 
 -- CreateIndex
@@ -196,9 +200,6 @@ ALTER TABLE "Authenticator" ADD CONSTRAINT "Authenticator_userId_fkey" FOREIGN K
 
 -- AddForeignKey
 ALTER TABLE "LigneCommande" ADD CONSTRAINT "LigneCommande_avionId_fkey" FOREIGN KEY ("avionId") REFERENCES "Produit"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Commande" ADD CONSTRAINT "Commande_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_CategoriesToProduit" ADD CONSTRAINT "_CategoriesToProduit_A_fkey" FOREIGN KEY ("A") REFERENCES "Categories"("id") ON DELETE CASCADE ON UPDATE CASCADE;

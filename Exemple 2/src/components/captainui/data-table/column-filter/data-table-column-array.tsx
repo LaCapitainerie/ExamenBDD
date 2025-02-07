@@ -1,11 +1,11 @@
-import * as React from "react"
-import { Check, PlusCircle } from "lucide-react"
-import { Column, Row } from "@tanstack/react-table"
+import * as React from "react";
+import { Check, PlusCircle } from "lucide-react";
+import { Column, Row } from "@tanstack/react-table";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -14,28 +14,37 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from "@/components/ui/command"
+} from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
-import { Separator } from "@/components/ui/separator"
-import { Fournisseur } from "@/types/Prisma/Fournisseur"
+} from "@/components/ui/popover";
+import { Separator } from "@/components/ui/separator";
 
 interface DataTableFacetedFilterProps<TData, TValue> {
-  column: Column<TData, TValue>
-  title?: string
-  id?: keyof TData
+  column: Column<TData, TValue>;
+  title?: string;
+  id: keyof TData;
 }
 
-export function ArrayFunctionFilter<TData>(
-  row: Row<TData>,
-  columnId: string,
-  filterValue: Fournisseur["name"][]
+export function ArrayFunctionFilter<
+  TData,
+  TRow extends Row<TData>,
+  TColumnId extends keyof TRow["original"],
+  TSubvalue extends keyof TRow["original"][TColumnId],
+  TFilter extends keyof TRow["original"][TColumnId],
+>(
+  filterName: keyof TSubvalue,
+  row: TRow,
+  columnId: TColumnId,
+  filterValue: TFilter[],
+  addMeta?: any
 ) {
-  const value = row.original[columnId as keyof TData] as Fournisseur[];
-  return filterValue.every((v) => value.map((v) => v.name).includes(v));
+  console.log(JSON.stringify(row.original), filterName, columnId, filterValue);
+  
+  const value = row.original[columnId] as typeof filterValue;
+  return filterValue.every((v) => value.map((v) => v[filterName]).includes(v));
 }
 
 export function DataTableColumnFilterArray<TData, TValue>({
@@ -43,21 +52,26 @@ export function DataTableColumnFilterArray<TData, TValue>({
   title,
   id,
 }: DataTableFacetedFilterProps<TData, TValue>) {
-  const totalOptions: { value: Fournisseur[]; count: any }[] = [];
+  const totalOptions: { value: TData[]; count: any }[] = [];
   const facets = column.getFacetedUniqueValues();
-  
-  facets.forEach((count, value) => 
-    totalOptions.push({ value, count })
+
+  facets.forEach((count, value) => totalOptions.push({ value, count }));
+
+  const uniqueOptionsSet = new Set(
+    totalOptions.map(({ value }) => value.map((v) => v[id])).flat()
   );
 
-  const uniqueOptions = totalOptions.map(({value}) => value.map(v => v.name));
-
-  const options = Array.from(new Set(uniqueOptions.flat())).map((value) => ({
+  const options = Array.from(uniqueOptionsSet).map((value) => ({
     value,
-    count: totalOptions.reduce((acc, option) => acc + (option.value.map(o => o.name).includes(value) ? option.count : 0), 0),
+    count: totalOptions.reduce(
+      (acc, option) =>
+        acc +
+        (option.value.map((o) => o[id]).includes(value) ? option.count : 0),
+      0
+    ),
   }));
 
-  const selectedValues = new Set(column?.getFilterValue() as string[])
+  const selectedValues = new Set(column?.getFilterValue() as string[]);
 
   return (
     <Popover>
@@ -108,20 +122,20 @@ export function DataTableColumnFilterArray<TData, TValue>({
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
               {options.map((option) => {
-                const isSelected = selectedValues.has(option.value)
+                const isSelected = selectedValues.has(option.value);
                 return (
                   <CommandItem
                     key={option.value.toString()}
                     onSelect={() => {
                       if (isSelected) {
-                        selectedValues.delete(option.value)
+                        selectedValues.delete(option.value);
                       } else {
-                        selectedValues.add(option.value)
+                        selectedValues.add(option.value);
                       }
-                      const filterValues = Array.from(selectedValues)
+                      const filterValues = Array.from(selectedValues);
                       column?.setFilterValue(
                         filterValues.length ? filterValues : undefined
-                      )
+                      );
                     }}
                   >
                     <div
@@ -135,13 +149,13 @@ export function DataTableColumnFilterArray<TData, TValue>({
                       <Check />
                     </div>
                     <span className="capitalize">{option.value}</span>
-                    {facets.get(option.value) && (
+                    {uniqueOptionsSet.has(option.value) && (
                       <span className="ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs">
-                        {facets.get(option.value)}
+                        {uniqueOptionsSet.has(option.value) ? option.count : 0}
                       </span>
                     )}
                   </CommandItem>
-                )
+                );
               })}
             </CommandGroup>
             {selectedValues.size > 0 && (
@@ -161,5 +175,5 @@ export function DataTableColumnFilterArray<TData, TValue>({
         </Command>
       </PopoverContent>
     </Popover>
-  )
+  );
 }

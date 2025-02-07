@@ -7,7 +7,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import AvionForm from "@/components/sections/_components/avion/_form";
-import { ProductTable } from "./_components/produit-table";
+import { ProductTable } from "../../components/sections/_components/avion/produit-table";
+import { Button } from "@/components/ui/button";
 
 export default async function RouterPage() {
 
@@ -24,8 +25,13 @@ export default async function RouterPage() {
               Consultez la liste des avions disponibles
             </p>
 
-            <Dialog>
-              <DialogTrigger>Ajouter un avion</DialogTrigger>
+            
+          </div>
+
+          <Dialog>
+              <DialogTrigger asChild>
+                <Button>Ajouter un avion</Button>
+              </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Données de l&apos;avion</DialogTitle>
@@ -39,7 +45,6 @@ export default async function RouterPage() {
                 
               </DialogContent>
             </Dialog>
-          </div>
         </div>
 
         <ProductTable />

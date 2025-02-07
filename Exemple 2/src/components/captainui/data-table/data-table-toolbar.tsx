@@ -44,7 +44,7 @@ export function DataTableToolbar<TData, TValue, TColumns extends ColumnDef<TData
               return Object.entries(value).map(([k, v]) => {
                 const col = table.getColumn(key);
                 return col && v && (
-                  <DataTableColumnFilter filterType={v} column={col} title={key.charAt(0).toLocaleUpperCase() + key.slice(1)} />
+                  <DataTableColumnFilter filterType={v} column={col} title={key.charAt(0).toLocaleUpperCase() + key.slice(1)} id={k} />
                 )
               })
             }

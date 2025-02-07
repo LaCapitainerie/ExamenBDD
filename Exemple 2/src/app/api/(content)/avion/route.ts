@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { authRoute } from "@/lib/safe-route";
+import { route } from "@/lib/safe-route";
 import { Avion } from "@/types/Prisma/Avion";
 import { Categorie } from "@/types/Prisma/Categorie";
 import { Fournisseur } from "@/types/Prisma/Fournisseur";
@@ -11,7 +11,7 @@ const QueryOptionnalSchema = z.object({
     end: z.date().optional(),
 })
 
-export const GET = authRoute
+export const GET = route
     .handler(async (req, { body }) => {
         
         try {
@@ -47,7 +47,7 @@ export const createAvionSchema = z.object({
     categories: Categorie.shape.name.array().default([]),
     fournisseurs: Fournisseur.shape.name.array().default([]),
 })
-export const POST = authRoute
+export const POST = route
     .body(createAvionSchema)
     .handler(async (req, { body }) => {
         
@@ -85,7 +85,7 @@ export const modifyAvionSchema = z.object({
     categories: Categorie.shape.name.array().optional(),
     fournisseurs: Fournisseur.shape.name.array().optional(),
 })
-export const PUT = authRoute
+export const PUT = route
     .body(modifyAvionSchema)
     .handler(async (req, { body }) => {
 
@@ -120,7 +120,7 @@ export const PUT = authRoute
 const deleteAvionSchema = z.object({
     id: Avion.shape.id,
 })
-export const DELETE = authRoute
+export const DELETE = route
     .query(deleteAvionSchema)
     .handler(async (req, { query }) => {
         

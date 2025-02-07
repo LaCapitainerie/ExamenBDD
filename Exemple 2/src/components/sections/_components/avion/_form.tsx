@@ -40,7 +40,6 @@ type FormProps = {
 };
 export default function AvionForm({ defaultValues }: FormProps) {
   const { data } = useSession();
-  const { avions } = useAvions();
   const { categories } = useCategories();
   const { fournisseurs } = useFournisseurs();
   const router = useRouter();
@@ -52,28 +51,26 @@ export default function AvionForm({ defaultValues }: FormProps) {
 
   async function onSubmit(values: formSchemaType) {
     try {
-
       const result = await fetchRequest<Avion | null>(null, "/api/avion", {
         method: "POST",
         headers: {
-          "Authorization": `token ${data?.access_token}`,
+          Authorization: `token ${data?.access_token}`,
         },
         body: JSON.stringify(values),
       });
-  
+
       if (!result) {
         toast.error("Failed to create avion");
         return;
       }
-  
+
       toast.success("Avion created");
 
       router.refresh();
       form.reset();
-
     } catch (error) {
-      console.error('Form submission error', error)
-      toast.error('Failed to submit the form. Please try again.')
+      console.error("Form submission error", error);
+      toast.error("Failed to submit the form. Please try again.");
     }
   }
 
@@ -223,43 +220,51 @@ export default function AvionForm({ defaultValues }: FormProps) {
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="categories"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Label</FormLabel>
-              <FormControl>
-                <FancyMultiSelect
-                  options={categories.map((c) => c.name)}
-                  values={field.value}
-                  onChange={field.onChange}
-                />
-              </FormControl>
-              <FormDescription>Label associé à l&apos;issue</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="grid grid-cols-12 gap-4">
+          <div className="col-span-6">
+            <FormField
+              control={form.control}
+              name="categories"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Categories</FormLabel>
+                  <FormControl>
+                    <FancyMultiSelect
+                      options={categories.map((c) => c.name)}
+                      values={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Label associé à l&apos;issue
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
-        <FormField
-          control={form.control}
-          name="fournisseurs"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Fournisseurs</FormLabel>
-              <FormControl>
-                <FancyMultiSelect
-                  options={fournisseurs.map((c) => c.name)}
-                  values={field.value}
-                  onChange={field.onChange}
-                />
-              </FormControl>
-              <FormDescription>Select multiple options.</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <div className="col-span-6">
+            <FormField
+              control={form.control}
+              name="fournisseurs"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Fournisseurs</FormLabel>
+                  <FormControl>
+                    <FancyMultiSelect
+                      options={fournisseurs.map((c) => c.name)}
+                      values={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormDescription>Select multiple options.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
         <Button type="submit">Submit</Button>
       </form>
     </Form>
