@@ -17,3 +17,5 @@ npx prisma migrate reset
 
 npm run dev
 ```
+
+![mcd|mld](./MCD%20BDD.drawio.png)
