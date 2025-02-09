@@ -77,15 +77,8 @@ export const AvionsColumns = [
                 </DropdownMenuContent>
             </DropdownMenu>
         ),
-        filterFn: (...props) => ArrayFunctionFilter("name", ...props)
+        filterFn: (...props) => ArrayFunctionFilter({ name: "enum" }, ...props)
     },
-    /* {
-        id: "details",
-        cell: ({ row }) =>
-            <FileDialog row={row} itemSchema={Label} >
-                <IssueForm mode="PUT" defaultValues={{ ...row.original, labels: row.original.labels.map(l => l.name) }} />
-            </FileDialog>
-    }, */
     {
         id: "delete",
         cell: ({ row }) => <DataTableRowDelete id={row.original.id} url={`/api/avion?id=${row.original.id}`} itemName="Avion" />,

@@ -9,7 +9,7 @@ import { NumberFunctionFilter } from "@/components/captainui/data-table/column-f
 import { ArrayFunctionFilter } from "@/components/captainui/data-table/column-filter/data-table-column-array";
 import { DataTableRowFormatDate } from "@/components/captainui/data-table/row-type/data-table-row-date";
 import { DataTableRowFormatCurrency } from "@/components/captainui/data-table/row-type/data-table-row-currency";
-import { Commande } from "@/types/Prisma/Commande";
+import { CommandeObject } from "@/types/Prisma/Commande";
 import { AvionAchete } from "@/types/Prisma/Avion";
 import { DateFunctionFilter } from "@/components/captainui/data-table/column-filter/data-table-column-date";
 
@@ -48,6 +48,9 @@ export const CommandesColumns = [
         filterFn: DateFunctionFilter
     },
     {
+        accessorKey: "status"
+    },
+    {
         accessorKey: "total",
         cell: ({ row }) => <DataTableRowFormatCurrency value={row.original.total} numberFormat={"fr-Fr"} currency={"EUR"} />,
         filterFn: NumberFunctionFilter
@@ -72,6 +75,6 @@ export const CommandesColumns = [
                 </DropdownMenuContent>
             </DropdownMenu>
         ),
-        filterFn: (row, col, oth) => ArrayFunctionFilter("name", row, col, oth)
+        filterFn: (row, col, oth) => ArrayFunctionFilter({ avion: { name: "enum" } }, row, col, oth)
     },
 ] satisfies ColumnDef<Commande & { avions: AvionAchete[] }>[];

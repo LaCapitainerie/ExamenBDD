@@ -12,6 +12,7 @@ const QueryOptionnalSchema = z.object({
 })
 
 export const GET = route
+    .query(QueryOptionnalSchema)
     .handler(async (req, { body }) => {
         
         try {

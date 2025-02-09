@@ -24,12 +24,12 @@ import {
 } from "@/components/ui/select";
 import { FancyMultiSelect } from "@/components/ui/multi-selector";
 import { Avion } from "@/types/Prisma/Avion";
-import { useAvions } from "@/hooks/use-avions";
+import { useProduits } from "@/hooks/use-avions";
 import { useCategories } from "@/hooks/use-categories";
 import { useFournisseurs } from "@/hooks/use-fournisseurs";
 import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "next/navigation";
-import { createAvionSchema } from "@/app/api/(content)/avion/route";
+import { createAvionSchema } from "@/app/api/(content)/produits/route";
 import { fetchRequest } from "@/lib/safe-route";
 import { useSession } from "next-auth/react";
 
@@ -38,7 +38,7 @@ type formSchemaType = z.infer<typeof createAvionSchema>;
 type FormProps = {
   defaultValues?: formSchemaType;
 };
-export default function AvionForm({ defaultValues }: FormProps) {
+export default function ProduitForm({ defaultValues }: FormProps) {
   const { data } = useSession();
   const { categories } = useCategories();
   const { fournisseurs } = useFournisseurs();

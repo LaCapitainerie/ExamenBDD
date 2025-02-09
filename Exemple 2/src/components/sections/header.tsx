@@ -10,11 +10,15 @@ import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { UserNav } from "../ui/user-nav";
 import { SessionProvider, useSession } from "next-auth/react";
+import { NotificationsHandler } from "../ui/notification";
+import useLocalState from "@phntms/use-local-state";
+import { Bell, ShoppingCartIcon } from "lucide-react";
+import { Badge } from "../ui/badge";
 
 export default function Header() {
   const { status, data } = useSession();
 
-  
+  const [value] = useLocalState("CART", "");
   const [addBorder, setAddBorder] = useState(false);
 
   useEffect(() => {
@@ -68,7 +72,15 @@ export default function Header() {
           <div className="flex-row gap-2 hidden sm:flex mr-4">
             {
               status === "authenticated" ? (
-                <UserNav user={data.user} className="border rounded-lg border-foreground" />
+                <>
+                  <Button size="icon" variant="outline" className="relative" aria-label="Open notifications">
+                  <ShoppingCartIcon size={16} strokeWidth={2} aria-hidden="true" />
+                  <Badge className="absolute -top-2 left-full min-w-5 -translate-x-1/2 px-1">
+                    {value.split(";").length - 1}
+                  </Badge>
+                </Button>
+                  <UserNav user={data.user} className="border rounded-lg border-foreground" />
+                </>
               ) : (
                 <>
                   <Link href="/login">

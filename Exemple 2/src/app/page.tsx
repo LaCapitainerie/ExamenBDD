@@ -1,6 +1,7 @@
 import { Particles } from "@/components/magicui/particles";
 import { siteConfig } from "@/config/config";
 import { BentoSection } from "./_components/bento";
+import { InfiniteScrollProduct } from "./catalogue/_components/infinite-scroll";
 
 export default async function Home() {
 
@@ -17,7 +18,8 @@ export default async function Home() {
           ease={80}
           refresh />
       </div>
-      <BentoSection />
+      
+      <InfiniteScrollProduct />
     </>
 
   );

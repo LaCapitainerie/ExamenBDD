@@ -6,6 +6,7 @@ import React from "react";
 import Footer from "@/components/sections/footer";
 import { Providers } from "./providers";
 import Header from "@/components/sections/header";
+import { ThemeToggle } from "@/components/other/theme-toggle";
 
 export const metadata: Metadata = constructMetadata({});
 
@@ -37,6 +38,7 @@ export default async function RootLayout({
           <Header />
           {children}
           <TailwindIndicator />
+          <ThemeToggle />
           <Footer />
         </Providers>
 

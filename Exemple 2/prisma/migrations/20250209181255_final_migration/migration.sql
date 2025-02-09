@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "Type" AS ENUM ('CARGO', 'CHASSE', 'TRANSPORT', 'HELICOPTERE');
+CREATE TYPE "Status" AS ENUM ('EN_ATTENTE', 'EN_COURS', 'LIVREE', 'ANNULEE');
 
 -- CreateTable
 CREATE TABLE "User" (
@@ -71,7 +71,7 @@ CREATE TABLE "Produit" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "reference" TEXT NOT NULL,
-    "type" "Type" NOT NULL,
+    "type" TEXT NOT NULL,
     "basePrice" DOUBLE PRECISION NOT NULL,
     "quantity" INTEGER NOT NULL,
     "description" TEXT NOT NULL,
@@ -125,6 +125,7 @@ CREATE TABLE "Commande" (
     "id" TEXT NOT NULL,
     "reference" TEXT NOT NULL,
     "date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "status" "Status" NOT NULL DEFAULT 'EN_ATTENTE',
     "userId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,

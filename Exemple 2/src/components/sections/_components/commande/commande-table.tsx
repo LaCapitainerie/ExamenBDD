@@ -9,7 +9,9 @@ import { useCommandes } from "@/hooks/use-commandes";
 
 export function CommandeTable() {
   const { data } = useSession();
-  const { commandes, isCommandesLoading } = useCommandes(data?.access_token ?? "");
+  const { commandes, isCommandesLoading } = useCommandes(
+    data?.access_token ?? ""
+  );
 
   if (data?.access_token === undefined) {
     return null;
@@ -25,8 +27,8 @@ export function CommandeTable() {
         reference: "enum",
         total: "number",
         date: "date",
-        avions: { avionId: "array" },
-        // userId: { name: "array" },
+        status: "enum",
+        avions: { avion: { name: "enum" } },
       }}
     />
   );

@@ -1,16 +1,21 @@
 import { prisma } from "@/lib/prisma";
 import { route } from "@/lib/safe-route";
+import { CommandeObject } from "@/types/Prisma/Commande";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-const QueryOptionnalSchema = z.object({
+const QuerySchema = z.object({
   start: z.coerce.date().optional(),
   end: z.coerce.date().optional(),
+  status: CommandeObject.shape.status.optional(),
+  reference: CommandeObject.shape.reference.optional(),
 });
 
 export const GET = route
-  .query(QueryOptionnalSchema)
-  .handler(async (req, { query }) => {
+  .query(QuerySchema)
+  .handler(async (req, { query, params }) => {
+    console.log(req, params);
+    
     try {
       const result = await prisma.commande
         .findMany({
@@ -25,6 +30,15 @@ export const GET = route
             date: {
               gte: query.start,
               lte: query.end,
+            },
+            userId: {
+              equals: params.id,
+            },
+            status: {
+                equals: query.status,
+            },
+            reference: {
+              equals: query.reference,
             },
           },
         })

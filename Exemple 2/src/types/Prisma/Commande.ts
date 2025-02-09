@@ -1,11 +1,12 @@
 import { z } from "zod";
 import { AvionAchete } from "./Avion";
 
-export const Commande = z.object({
+export const CommandeObject = z.object({
     id: z.string().cuid(),
     
     reference: z.string(),
     date: z.date(),
+    status: z.enum(["EN_ATTENTE", "EN_COURS", "LIVREE", "ANNULEE"]),
     total: z.number(),
 
     userId: z.string(),
@@ -16,4 +17,4 @@ export const Commande = z.object({
 
 });
 
-export type Commande = z.infer<typeof Commande>;
+export type Commande = z.infer<typeof CommandeObject>;

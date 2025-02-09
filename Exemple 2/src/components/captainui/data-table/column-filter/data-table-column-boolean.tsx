@@ -26,6 +26,7 @@ import { z } from "zod"
 interface DataTableFacetedFilterProps<TData, TValue> {
   column: Column<TData, TValue>
   title?: string
+  sub: string[]
 }
 
 export function BooleanFunctionFilter<TData>(
@@ -43,11 +44,16 @@ export function BooleanFunctionFilter<TData>(
 export function DataTableColumnFilterBoolean<TData, TValue>({
   column,
   title,
+  sub,
 }: DataTableFacetedFilterProps<TData, TValue>) {
 
   if (column.getFilterFn() && !(column.getFilterFn() === BooleanFunctionFilter)) throw new Error(`Column ${title} must have a boolean filter function`);
 
-  const facets = column?.getFacetedUniqueValues()
+  const facets: Map<any, number> = column?.getFacetedUniqueValues()
+  const uniqueOptionsSet = new Set(facets?.keys())
+  console.log(uniqueOptionsSet);
+  
+
   const selectedValues = new Set(column?.getFilterValue() as boolean[])
 
   const YesIcon = (

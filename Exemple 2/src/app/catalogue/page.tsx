@@ -6,9 +6,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import AvionForm from "@/components/sections/_components/avion/_form";
-import { ProductTable } from "../../components/sections/_components/avion/produit-table";
+import ProduitForm from "@/components/sections/_components/produit/_form";
+import { ProductTable } from "../../components/sections/_components/produit/produit-table";
 import { Button } from "@/components/ui/button";
+import { InfiniteScrollProduct } from "./_components/infinite-scroll";
 
 export default async function RouterPage() {
 
@@ -41,13 +42,15 @@ export default async function RouterPage() {
                   </DialogDescription>
                 </DialogHeader>
 
-                <AvionForm />
+                <ProduitForm />
                 
               </DialogContent>
             </Dialog>
         </div>
 
-        <ProductTable />
+        <InfiniteScrollProduct />
+
+        {/* <ProductTable /> */}
 
       </div>
 
